@@ -16,3 +16,10 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('crafts', function () {
+    return [
+        ['name' => 'rzeźba', 'author' => 'Janek'],
+        ['name' => 'domek dla lalek', 'author' => 'Ania']
+    ];
+});
