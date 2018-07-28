@@ -54,7 +54,8 @@ class CraftController extends Controller
      */
     public function show(Craft $craft)
     {
-        //
+        $craft['author'] = User::find($craft['author_id']);
+        return $craft;
     }
 
     /**
