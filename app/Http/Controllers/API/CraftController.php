@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
 use App\Craft;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\User;
 
 class CraftController extends Controller
 {
@@ -14,7 +16,13 @@ class CraftController extends Controller
      */
     public function index()
     {
-        //
+        $craftsDto = Craft::all();
+
+        foreach($craftsDto as $key => $craft) {
+            $craftsDto[$key]['author'] = User::findOrFail($craft['author_id']);
+        }
+
+        return $craftsDto;
     }
 
     /**
