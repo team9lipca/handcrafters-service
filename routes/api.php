@@ -45,8 +45,8 @@ Route::get('/user-crafts-main/{username}/{page}', function ($username, $page) {
 
     $craftsDto = Craft::where(['author_id' => $user['id']])->skip(($page-1)*10)->take(10)->get();
 
-    return ['crafts' => $craftsDto];
-});
+    return ['crafts' => $craftsDto, 'logged_user' => Auth::user()];
+})->middleware('web');
 
 Route::get('dbtest', function() {
     DB::connection()->getPdo();
