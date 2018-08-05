@@ -20,25 +20,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::apiResource('crafts', 'API\CraftController');
 
-Route::get('/crafts-main/{page}', function ($page) {
-    $craftsDto = Craft::skip(($page-1)*10)->take(10)->get();
+Route::get('/crafts/home-page/{page}/{count?}', 'API\CraftController@homePageCrafts');
 
-    foreach($craftsDto as $key => $craft) {
-        $craftsDto[$key]['author'] = User::findOrFail($craft['author_id']);
-    }
-
-    return ['crafts' => $craftsDto];
-});
-
-Route::get('/users-main/{page}', function ($page) {
-    $usersDto = User::skip(($page-1)*10)->take(10)->get();
-
-    foreach($usersDto as $key => $user) {
-        $usersDto[$key]['last-crafts'] = Craft::where(['author_id' => $user['id']])->orderBy('created_at')->take(5)->get();
-    }
-
-    return ['users' => $usersDto];
-});
+Route::get('/crafters/popular/{page}/{count?}', 'API\UserController@mostPopularCrafters');
 
 Route::get('/user-crafts-main/{username}/{page}', function ($username, $page) {
     $user = User::where(['name' => $username])->first();
@@ -47,7 +31,3 @@ Route::get('/user-crafts-main/{username}/{page}', function ($username, $page) {
 
     return ['crafts' => $craftsDto, 'logged_user' => Auth::user()];
 })->middleware('web');
-
-Route::get('dbtest', function() {
-    DB::connection()->getPdo();
-});

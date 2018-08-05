@@ -49,6 +49,8 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
 |
 */
 
+header("Access-Control-Allow-Origin: http://127.0.0.1:4200");
+
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 
 $response = $kernel->handle(

@@ -91,4 +91,14 @@ class CraftController extends Controller
     {
         //
     }
+
+    public function homePageCrafts($page, $count = 20) {
+        $craftsDto = Craft::skip(($page-1)*$count)->take($count)->get();
+
+        foreach($craftsDto as $key => $craft) {
+            $craftsDto[$key]['author'] = User::findOrFail($craft['author_id']);
+        }
+
+        return ['crafts' => $craftsDto];
+    }
 }
