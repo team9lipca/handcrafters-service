@@ -14,19 +14,6 @@ use App\User;
 |
 */
 
-//Route::post('register', 'AuthController@register');
-Route::post('login', 'AuthController@login');
-//Route::post('recover', 'AuthController@recover');
-Route::group(['middleware' => ['jwt.auth']], function() {
-    Route::get('logout', 'AuthController@logout');
-    Route::get('test', function(){
-        return response()->json(['foo'=>'bar']);
-    });
-});
-
-Route::get('test2', function(){
-    return response()->json(['foo'=> Auth::user() ]);
-});
 
 /*Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
