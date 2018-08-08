@@ -14,7 +14,22 @@ use App\User;
 |
 */
 
+/*
+Route::group([
+    'prefix' => 'auth'
+], function () {
+    Route::post('login', 'AuthController@login');
+    Route::post('signup', 'AuthController@signup');
 
+    Route::group([
+        'middleware' => 'auth:api'
+    ], function() {
+        Route::get('logout', 'AuthController@logout');
+        Route::get('user', 'AuthController@user');
+    });
+});
+*/
+require __DIR__ . '/auth/auth.php';
 /*Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });*/
@@ -23,7 +38,7 @@ Route::apiResource('crafts', 'API\CraftController');
 
 Route::get('/crafts/home-page/{page}/{count?}', 'API\CraftController@homePageCrafts');
 
-Route::get('/crafters/popular/{page}/{count?}', 'API\UserController@mostPopularCrafters');
+Route::get('/crafters/popular/{page}/{count?}', 'UserController@mostPopularCrafters');
 
 /*Route::get('/user-crafts-main/{username}/{page}', function ($username, $page) {
     $user = User::where(['name' => $username])->first();
