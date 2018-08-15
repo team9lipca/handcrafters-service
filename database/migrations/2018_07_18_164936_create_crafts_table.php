@@ -18,6 +18,7 @@ class CreateCraftsTable extends Migration
             $table->string('name');
             $table->string('description');
             $table->integer('author_id');
+            $table->string('image_url');
             $table->timestamps();
         });
     }

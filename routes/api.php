@@ -29,14 +29,16 @@ Route::group([
     });
 });
 */
-require __DIR__ . '/auth/auth.php';
+//require __DIR__ . '/auth/auth.php';
 /*Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });*/
 
-Route::apiResource('crafts', 'API\CraftController');
+Route::apiResource('shots', 'CraftController');
 
-Route::get('/crafts/home-page/{page}/{count?}', 'API\CraftController@homePageCrafts');
+Route::apiResource('handcrafters', 'UserController');
+
+Route::get('/crafts/home-page/{page}/{count?}', 'CraftController@homePageCrafts');
 
 Route::get('/crafters/popular/{page}/{count?}', 'UserController@mostPopularCrafters');
 
