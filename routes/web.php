@@ -11,14 +11,4 @@
 |
 */
 
-Route::get('/', function () {
-    return view('index');
-})->name('home');
-
-Auth::routes();
-
-Route::get('/{any}', function ($any) {
-
-    return view('index');
-
-})->where('any', '.*');
+//Auth::routes();
