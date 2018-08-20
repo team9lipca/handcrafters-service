@@ -42,6 +42,11 @@ Route::get('/crafts/home-page/{page}/{count?}', 'CraftController@homePageCrafts'
 
 Route::get('/crafters/popular/{page}/{count?}', 'UserController@mostPopularCrafters');
 
+
+Route::any('/{any}', function ($any) {
+    return response(["messages" => ["Route not found"]], 404);
+})->where('any', '.*');
+
 /*Route::get('/user-crafts-main/{username}/{page}', function ($username, $page) {
     $user = User::where(['name' => $username])->first();
 

@@ -6,6 +6,7 @@ use App\Craft;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
+use Validator;
 
 class CraftController extends Controller
 {
@@ -29,19 +30,26 @@ class CraftController extends Controller
     public function store(Request $request)
     {
         try {
-            $craft = new Craft([
-                'name' => $request['name'],
-                'description' => $request['description'],
-                'image_url' => $request['image_url'],
-                'author_id' => User::inRandomOrder()->get()->first()->id
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'description' => 'required',
+                'image_url' => 'required'
             ]);
+
+            if ($validator->fails()) {
+                return response(['messages' => $validator->errors()->all()], 400);
+            }
+
+            $craft = new Craft();
+            $craft->fill($request->all());
+            $craft['author_id'] = User::inRandomOrder()->get()->first()->id;
 
             $craft->save();
 
             return response($craft, 201);
         }
         catch (\Exception $e) {
-            return response(['message' => $e->getMessage()], 400);
+            return response(['messages' => [$e->getMessage()]], 400);
         }
     }
 
@@ -62,6 +70,19 @@ class CraftController extends Controller
     public function update(Request $request, $id)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'description' => 'required',
+                'image_url' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response(['messages' => $validator->errors()->all()], 400);
+            }
+
+            if(!$craft = Craft::find($id))
+                throw new \Exception('No record with given id found');
+
             $craft = Craft::find($id);
 
             $craft->fill($request->all());
@@ -71,7 +92,7 @@ class CraftController extends Controller
             return response($craft, 200);
         }
         catch (\Exception $e) {
-            return response(['message' => 'Wrong input'], 400);
+            return response(['messages' => ['Wrong input']], 400);
         }
     }
 
@@ -81,10 +102,10 @@ class CraftController extends Controller
             if(!$craft = Craft::find($id))
                 throw new \Exception('No record with given id found');
             $craft->delete();
-            return response(['message' => "Record with id $id removed"], 200);
+            return response(['messages' => ["Record with id $id removed"]], 200);
         }
         catch (\Exception $e) {
-            return response(['message' => $e->getMessage()], 400);
+            return response(['messages' => [$e->getMessage()]], 400);
         }
     }
 

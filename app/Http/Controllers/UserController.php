@@ -8,6 +8,7 @@ use Response;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Support\Facades\DB;
+use Validator;
 
 class UserController extends Controller
 {
@@ -25,6 +26,16 @@ class UserController extends Controller
     public function store(Request $request)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                'login' => 'required|unique:users,login',
+                'email' => 'required|unique:users,email|email',
+                'password' => 'required|min:4'
+            ]);
+
+            if ($validator->fails()) {
+                return response(['messages' => $validator->errors()->all()], 400);
+            }
+
             $request['password'] = bcrypt($request['password']);
             $user = new User($request->all());
 
@@ -35,7 +46,7 @@ class UserController extends Controller
             return response($user, 201);
         }
         catch (\Exception $e) {
-            return response(['message' => 'Wrong input'], 400);
+            return response(['messages' => [$e->getMessage()]], 400);
         }
     }
 
@@ -65,17 +76,27 @@ class UserController extends Controller
             return response($users);
         }
         catch (\Exception $e) {
-            return response(['message' => $e->getMessage()], 400);
+            return response(['messages' => [$e->getMessage()]], 400);
         }
     }
 
     public function update(Request $request, $id)
     {
         try {
-            $user = User::find($id);
+            $validator = Validator::make($request->all(), [
+                'login' => 'required|unique:users,login',
+                'email' => 'required|unique:users,email|email',
+                'password' => 'required|min:4'
+            ]);
 
-            if(isset($request['password']))
-                $request['password'] = bcrypt($request['password']);
+            if ($validator->fails()) {
+                return response(['messages' => $validator->errors()->all()], 400);
+            }
+
+            if(!$user = User::find($id))
+                throw new \Exception('No record with given id found');
+
+            $request['password'] = bcrypt($request['password']);
 
             $user->fill($request->all());
 
@@ -84,7 +105,7 @@ class UserController extends Controller
             return response($user, 201);
         }
         catch (\Exception $e) {
-            return response(['message' => 'Wrong input'], 400);
+            return response(['messages' => ['Wrong input']], 400);
         }
     }
 
@@ -94,10 +115,10 @@ class UserController extends Controller
             if(!$user = User::find($id))
                 throw new \Exception('No record with given id found');
             $user->delete();
-            return response(['message' => "Record with id $id removed"], 200);
+            return response(['messages' => ["Record with id $id removed"]], 200);
         }
         catch (\Exception $e) {
-            return response(['message' => $e->getMessage()], 400);
+            return response(['messages' => [$e->getMessage()]], 400);
         }
     }
 
