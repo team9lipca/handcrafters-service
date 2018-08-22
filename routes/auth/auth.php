@@ -1,8 +1,7 @@
 <?php
 Route::group([
     'namespace' => 'Auth',
-    'middleware' => 'api',
-    'prefix' => 'auth'
+    'middleware' => 'api'
 ], function () {
     Route::post('login', 'AuthController@login');
     Route::post('signup', 'AuthController@signup');

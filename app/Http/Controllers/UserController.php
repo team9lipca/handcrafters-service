@@ -83,18 +83,26 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'login' => 'required|unique:users,login',
-                'email' => 'required|unique:users,email|email',
+            if(!$user = User::find($id))
+                throw new \Exception('No record with given id found');
+
+            $rules = [
+                'login' => 'required|unique:users,login,'.$user->id,
+                'email' => 'required|unique:users,email|email,'.$user->id,
                 'password' => 'required|min:4'
-            ]);
+            ];
+
+            foreach($rules as $ruleField => $ruleString) {
+                if(!isset($request[$ruleField])) {
+                    unset($rules[$ruleField]);
+                }
+            }
+
+            $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
                 return response(['messages' => $validator->errors()->all()], 400);
             }
-
-            if(!$user = User::find($id))
-                throw new \Exception('No record with given id found');
 
             $request['password'] = bcrypt($request['password']);
 
