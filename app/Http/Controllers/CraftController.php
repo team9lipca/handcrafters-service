@@ -7,9 +7,14 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
 use Validator;
+use Auth;
 
 class CraftController extends Controller
 {
+    public function __construct() {
+        $this->middleware('auth:api')->only(['store', 'update', 'destroy']);
+    }
+
     public function index(Request $request)
     {
         if($request->query('id'))
@@ -22,6 +27,19 @@ class CraftController extends Controller
 
         foreach($craftsDto as $key => $craft) {
             $craftsDto[$key]['author'] = User::findOrFail($craft['author_id'])->only(['id', 'name']);
+        }
+
+
+        if($request->query('sortby')) {
+            if(isset($craftsDto->first()[$request->query('sortby')]))
+                $sortby = $request->query('sortby');
+            else
+                $sortby = 'id';
+
+            if($request->query('sort') == 'desc')
+                $craftsDto = $craftsDto->sortByDesc($sortby);
+            else
+                $craftsDto = $craftsDto->sortBy($sortby);
         }
 
         return $craftsDto;
@@ -42,7 +60,7 @@ class CraftController extends Controller
 
             $craft = new Craft();
             $craft->fill($request->all());
-            $craft['author_id'] = User::inRandomOrder()->get()->first()->id;
+            $craft['author_id'] = Auth::id(); //User::inRandomOrder()->get()->first()->id;
 
             $craft->save();
 
